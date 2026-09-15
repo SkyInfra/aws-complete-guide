@@ -630,8 +630,6 @@ This project can be extended into a more production-oriented architecture.
 
 Possible improvements include:
 
-* Auto Scaling Group
-* Launch Template
 * Two application instances across two Availability Zones
 * HTTPS using ACM
 * Route 53 custom domain
