@@ -1394,10 +1394,5 @@ Application Integration
 
 ---
 
-## Author
-
-**Muhammad Haseeb Akhtar**
-
-Software Engineering Student • Cloud & DevOps Enthusiast
 
 GitHub: [SkyInfra](https://github.com/SkyInfra)
