@@ -1,214 +1,105 @@
-# Day 21 — Amazon ECS with AWS Fargate 🚀
+# 🚀 Amazon ECS — Deploying a Dockerized Application with AWS Fargate
 
-## 📌 Overview
+This project demonstrates how to take a simple web application, package it into a Docker container, push the image to **Amazon ECR**, and deploy it on **Amazon ECS using AWS Fargate**.
 
-Amazon Elastic Container Service (Amazon ECS) is a fully managed AWS service for running and managing Docker containers.
+The goal of this hands-on project was to understand the complete container deployment workflow from a local machine to AWS.
 
-In this project, I deployed a Dockerized static web application to **Amazon ECS using AWS Fargate**.
+---
 
-The complete workflow was:
+## 📌 What is Amazon ECS?
+
+**Amazon Elastic Container Service (ECS)** is a fully managed AWS service used to run and manage Docker containers.
+
+Instead of manually managing servers, ECS allows us to deploy, run, scale, and manage containerized applications.
+
+For this project, I used **AWS Fargate**, which allows ECS to run containers without managing EC2 servers.
+
+---
+
+## 🏗️ Project Architecture
 
 ```text
-HTML / CSS / JavaScript
-          ↓
-       Docker
-          ↓
-    Docker Image
-          ↓
-     Amazon ECR
-          ↓
-     Amazon ECS
-          ↓
-     AWS Fargate
-          ↓
-   Running Container
-          ↓
-      Public IP
-          ↓
-      Web Browser
+Local Application
+       │
+       ▼
+   Docker Image
+       │
+       ▼
+ Amazon ECR
+       │
+       ▼
+ Amazon ECS
+       │
+       ▼
+    Fargate
+       │
+       ▼
+ Running Container
+       │
+       ▼
+ Web Application
 ```
 
 ---
 
-# ☁️ What is Amazon ECS?
+## 🧰 Technologies Used
 
-**Amazon ECS (Elastic Container Service)** is an AWS container orchestration service.
-
-It allows us to:
-
-* Run Docker containers
-* Manage containers
-* Define how containers should run
-* Create multiple running instances of an application
-* Restart failed containers
-* Scale applications
-* Integrate containers with other AWS services
-
-Instead of manually running Docker containers on a server, ECS manages the container workload for us.
-
----
-
-# 🐳 Docker vs Amazon ECS
-
-Docker and ECS are not the same thing.
-
-### Docker
-
-Docker is used to:
-
-* Build container images
-* Create containers
-* Run containers
-* Package applications with their dependencies
-
-### Amazon ECS
-
-ECS is used to:
-
-* Manage containers
-* Schedule containers
-* Maintain desired task counts
-* Deploy applications
-* Scale container workloads
-* Integrate containers with AWS infrastructure
-
-A simple way to remember:
-
-```text
-Docker = Build and run containers
-
-ECS = Manage containers at scale
-```
-
----
-
-# 🧩 Important ECS Components
-
-## 1. ECS Cluster
-
-A cluster is a logical grouping of ECS resources.
-
-Our cluster:
-
-```text
-ecs-demo-cluster
-```
-
----
-
-## 2. Task Definition
-
-A Task Definition is the configuration or **recipe** that tells ECS how to run a container.
-
-Our task definition:
-
-```text
-ecs-demo-task-v2:1
-```
-
-It defined:
-
-```text
-CPU:              0.25 vCPU
-Memory:           0.5 GiB
-Operating System: Linux
-Architecture:     X86_64
-Network Mode:     awsvpc
-Container Port:   80
-Launch Type:      Fargate
-```
-
----
-
-## 3. Task
-
-A Task is the actual running instance created from a Task Definition.
-
-For this project, ECS launched one Fargate task.
-
-```text
-Task Status: Running
-Launch Type: Fargate
-```
-
----
-
-## 4. Service
-
-An ECS Service keeps the required number of tasks running.
-
-Our service:
-
-```text
-ecs-demo-service-v2
-```
-
-Desired count:
-
-```text
-1
-```
-
-This means ECS should maintain one running task for the service.
-
----
-
-## 5. Fargate
-
-AWS Fargate is a serverless compute engine for containers.
-
-With Fargate, we don't need to manage the underlying EC2 servers.
-
-```text
-Traditional ECS:
-
-ECS → EC2 → Docker Container
-
-
-Fargate:
-
-ECS → Fargate → Container
-```
-
----
-
-# 📦 Project Application
-
-For this project, I created a simple static web application using:
-
-```text
-HTML
-CSS
-JavaScript
-```
-
-The application contains:
-
-* ECS demonstration page
-* Architecture cards
-* Docker information
-* ECR information
-* ECS information
-* Application status button
+* HTML
+* CSS
+* JavaScript
+* Docker
+* Amazon ECR
+* Amazon ECS
+* AWS Fargate
+* AWS VPC
+* AWS Security Groups
+* AWS CLI
 
 ---
 
 # 📁 Project Structure
 
 ```text
-ecs-demo-app/
+day-13-amazon-ecs/
 │
-├── index.html
-├── style.css
-├── script.js
-└── Dockerfile
+├── README.md
+│
+├── app/
+│   ├── index.html
+│   ├── style.css
+│   ├── script.js
+│   └── Dockerfile
+│
+└── screenshots/
+    ├── 01-local-docker-app.png
+    ├── 02-docker-image.png
+    ├── 03-ecr-repository.png
+    ├── 04-ecs-task-definition.png
+    ├── 05-ecs-service-running.png
+    ├── 06-fargate-task-networking.png
+    └── 07-ecs-app-live.png
 ```
 
 ---
 
-# 🐳 Dockerfile
+# 🌐 Application
 
-The application uses Nginx as the web server.
+The application is a simple static website created using HTML, CSS, and JavaScript.
+
+It displays:
+
+* AWS ECS information
+* Docker → ECR → ECS architecture
+* Application status
+* Cloud & DevOps learning information
+
+The application is served using **Nginx** inside the Docker container.
+
+---
+
+# 🐳 Docker Configuration
+
+The application uses the following Dockerfile:
 
 ```dockerfile
 FROM nginx:alpine
@@ -222,106 +113,88 @@ EXPOSE 80
 
 ### Explanation
 
-`FROM nginx:alpine`
-
-Uses the lightweight Nginx Alpine image.
-
-`COPY`
-
-Copies the application files into Nginx's web directory.
-
-`EXPOSE 80`
-
-Documents that the application listens on port 80 inside the container.
+* `FROM nginx:alpine` → Uses a lightweight Nginx image.
+* `COPY` → Copies the application files into Nginx's web directory.
+* `EXPOSE 80` → Documents that the application listens on port 80.
 
 ---
 
-# 🧪 Step 1 — Run the Application Locally
+# 1️⃣ Build the Docker Image
 
-First, I built the Docker image:
+From the `app` directory:
 
 ```bash
 docker build -t ecs-demo-app:v1 .
 ```
 
-Then I ran the container:
+This creates a Docker image named:
+
+```text
+ecs-demo-app:v1
+```
+
+---
+
+# 2️⃣ Run the Application Locally
 
 ```bash
 docker run -d --name ecs-demo-container -p 8080:80 ecs-demo-app:v1
 ```
 
-The mapping:
-
-```text
-Mac Port 8080
-      ↓
-Container Port 80
-      ↓
-Nginx
-```
-
-The application was available at:
+The application can then be accessed at:
 
 ```text
 http://localhost:8080
 ```
 
-### Screenshot
-
-![Local Docker Application](01-local-docker-app.png)
-
----
-
-# 🏗️ Step 2 — Build the ECS-Compatible Docker Image
-
-Because the application was being developed on an Apple Silicon Mac, the initial Docker image was built for ARM64.
-
-AWS Fargate was configured for:
-
-```text
-X86_64 / amd64
-```
-
-The initial deployment failed because the image did not contain an `linux/amd64` image manifest.
-
-I rebuilt the image specifically for AMD64:
+### Verify the container
 
 ```bash
-docker build --platform linux/amd64 -t ecs-demo-app:v2 .
+docker ps
 ```
 
-This created an image compatible with the Fargate task architecture.
+The container should show a running status.
 
-### Screenshot
+### 📸 Evidence
 
-![Docker Image](02-docker-image.png)
+![Local Docker Application](screenshots/01-local-docker-app.png)
 
 ---
 
-# 📦 Step 3 — Create Amazon ECR Repository
+# 3️⃣ Create an Amazon ECR Repository
 
-Amazon ECR (Elastic Container Registry) is a managed container image registry.
+An **Amazon Elastic Container Registry (ECR)** repository stores Docker images in AWS.
 
-I created the repository:
+Repository used for this project:
 
 ```text
 ecs-demo-app
 ```
 
-Repository URI:
+AWS Region:
+
+```text
+us-east-1
+```
+
+The ECR repository URI was:
 
 ```text
 830955873996.dkr.ecr.us-east-1.amazonaws.com/ecs-demo-app
 ```
 
+### 📸 Evidence
+
+![ECR Repository](screenshots/03-ecr-repository.png)
+
 ---
 
-# 🔐 Step 4 — Authenticate Docker with ECR
-
-I authenticated Docker with Amazon ECR using:
+# 4️⃣ Authenticate Docker with Amazon ECR
 
 ```bash
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 830955873996.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region us-east-1 | \
+docker login --username AWS --password-stdin \
+830955873996.dkr.ecr.us-east-1.amazonaws.com
 ```
 
 Expected output:
@@ -330,244 +203,160 @@ Expected output:
 Login Succeeded
 ```
 
+This allows Docker to push images to the ECR repository.
+
 ---
 
-# 🏷️ Step 5 — Tag the Docker Image
+# 5️⃣ Build the Image for AWS Fargate
+
+Because the development machine uses Apple Silicon, the initial Docker image was built for **ARM64**.
+
+The ECS Fargate task was configured for **X86_64**, so the first image could not be pulled by the task.
+
+The image was rebuilt for the required architecture:
+
+```bash
+docker build --platform linux/amd64 -t ecs-demo-app:v2 .
+```
+
+This created an AMD64-compatible image.
+
+---
+
+# 6️⃣ Tag the Docker Image
 
 ```bash
 docker tag ecs-demo-app:v2 \
 830955873996.dkr.ecr.us-east-1.amazonaws.com/ecs-demo-app:v2
 ```
 
-This gives the local image the ECR repository name.
+The image was now associated with the ECR repository.
 
 ---
 
-# 🚀 Step 6 — Push Image to ECR
+# 7️⃣ Push the Image to Amazon ECR
 
 ```bash
 docker push \
 830955873996.dkr.ecr.us-east-1.amazonaws.com/ecs-demo-app:v2
 ```
 
-The image was successfully uploaded to ECR.
+After the push completed, the Docker image was available in Amazon ECR.
 
-### Screenshot
+### 📸 Evidence
 
-![ECR Repository](03-ecr-repository.png)
-
----
-
-# ☁️ Step 7 — Create ECS Cluster
-
-I created the ECS cluster:
-
-```text
-ecs-demo-cluster
-```
-
-The cluster provides the logical environment where the ECS service and tasks run.
+![Docker Image](screenshots/02-docker-image.png)
 
 ---
 
-# 📋 Step 8 — Create Fargate Task Definition
+# 8️⃣ Create an ECS Cluster
 
-I created:
+An ECS cluster was created with the following configuration:
 
 ```text
-ecs-demo-task-v2:1
+Cluster Name: ecs-demo-cluster
+Capacity Provider: Fargate
 ```
+
+The cluster provides the logical environment where ECS tasks and services run.
+
+---
+
+# 9️⃣ Create the ECS Task Definition
+
+A task definition describes how ECS should run the container.
+
+Configuration used:
+
+| Setting        | Value             |
+| -------------- | ----------------- |
+| Launch Type    | Fargate           |
+| OS             | Linux             |
+| Architecture   | X86_64            |
+| CPU            | 0.25 vCPU         |
+| Memory         | 512 MiB           |
+| Network Mode   | awsvpc            |
+| Container Port | 80                |
+| Protocol       | TCP               |
+| Image          | `ecs-demo-app:v2` |
+
+The task execution role used was:
+
+```text
+ecsTaskExecutionRole
+```
+
+### 📸 Evidence
+
+![ECS Task Definition](screenshots/04-ecs-task-definition.png)
+
+---
+
+# 🔟 Create an ECS Service
+
+The ECS service was configured to keep the desired number of tasks running.
 
 Configuration:
 
 ```text
-Launch Type:       Fargate
-Operating System:  Linux
-Architecture:      X86_64
-CPU:               0.25 vCPU
-Memory:            0.5 GiB
-Network Mode:      awsvpc
-Container Port:    80
-Protocol:          TCP
+Service Name: ecs-demo-service-v2
+Desired Tasks: 1
+Launch Type: Fargate
 ```
 
-The container image was:
+The service successfully launched one running task.
 
-```text
-830955873996.dkr.ecr.us-east-1.amazonaws.com/ecs-demo-app:v2
-```
+### 📸 Evidence
 
-### Screenshot
-
-![ECS Task Definition](04-ecs-task-definition.png)
+![ECS Service Running](screenshots/05-ecs-service-running.png)
 
 ---
 
-# ⚙️ Step 9 — Create ECS Service
+# 🌐 Networking
 
-I created the ECS service:
+The Fargate task used the AWS VPC networking model with:
 
-```text
-ecs-demo-service-v2
-```
+* VPC
+* Subnet
+* Security Group
+* Elastic Network Interface (ENI)
+* Public IP address
 
-Configuration:
-
-```text
-Scheduling Strategy: Replica
-Desired Tasks:       1
-Capacity Provider:   Fargate
-```
-
-The service successfully reached:
+The task was configured with:
 
 ```text
-1 Desired
-1 Running
-0 Pending
+Auto-assign Public IP: Enabled
 ```
 
-### Screenshot
+The security group allowed HTTP traffic to port:
 
-![ECS Service Running](05-ecs-service-running.png)
+```text
+80
+```
+
+### 📸 Evidence
+
+![Fargate Task Networking](screenshots/06-fargate-task-networking.png)
 
 ---
 
-# 🌐 Step 10 — Configure Networking
+# 🌍 Application Running on AWS
 
-The task used:
+After the ECS service started successfully, the Fargate task received network connectivity and the Nginx container started serving the application.
 
-```text
-Network Mode: awsvpc
-```
+The application was accessible through the task's public IP address.
 
-Each Fargate task receives its own network interface.
+### 📸 Evidence
 
-The running task received:
-
-```text
-Private IP: 172.31.66.206
-Public IP: 3.238.246.75
-```
-
-The service had:
-
-```text
-Auto-assign Public IP: ON
-```
-
-The container was listening on:
-
-```text
-Port 80
-```
-
-### Screenshot
-
-![Fargate Task Networking](06-fargate-task-networking.png)
+![ECS Application Live](screenshots/07-ecs-app-live.png)
 
 ---
 
-# 🌍 Step 11 — Access the Application
+# ⚠️ Important Issue: ARM64 vs AMD64
 
-After the Fargate task entered the `Running` state, I accessed the application using its public IP.
+One of the important problems encountered during this project was a Docker architecture mismatch.
 
-```text
-http://<PUBLIC-IP>
-```
-
-The application successfully loaded in the browser.
-
-### Screenshot
-
-![ECS Application Live](07-ecs-app-live.png)
-
----
-
-# 🏗️ Final Architecture
-
-```text
-                    Developer
-                        │
-                        ▼
-                 HTML/CSS/JS App
-                        │
-                        ▼
-                     Docker
-                        │
-                        ▼
-                  Docker Image
-                        │
-                        ▼
-                Amazon ECR
-                        │
-                        │ Pull Image
-                        ▼
-                Amazon ECS
-                        │
-                        ▼
-                   AWS Fargate
-                        │
-                        ▼
-                 Running Task
-                        │
-                 ┌──────┴──────┐
-                 │             │
-             Private IP     Public IP
-                 │             │
-                 └──────┬──────┘
-                        ▼
-                   Web Browser
-```
-
----
-
-# 🧠 Important Concepts Learned
-
-### ECS Cluster
-
-Logical grouping of ECS resources.
-
-### Task Definition
-
-Defines how a container should run.
-
-### Task
-
-The actual running container workload.
-
-### Service
-
-Maintains the desired number of running tasks.
-
-### Fargate
-
-Runs containers without requiring us to manage EC2 servers.
-
-### ECR
-
-Stores Docker container images.
-
-### awsvpc
-
-Provides networking for ECS tasks using VPC networking.
-
----
-
-# ⚠️ Important Issue I Encountered
-
-During the first deployment, the Fargate task failed with:
-
-```text
-CannotPullContainerError
-
-image Manifest does not contain descriptor
-matching platform 'linux/amd64'
-```
-
-### Why?
-
-My MacBook uses Apple Silicon, so the original Docker image was built for:
+The development machine uses Apple Silicon, which commonly builds images for:
 
 ```text
 linux/arm64
@@ -576,79 +365,105 @@ linux/arm64
 The ECS task was configured for:
 
 ```text
-linux/amd64
+X86_64
 ```
 
-### Solution
+This caused the container to fail when ECS attempted to pull the image.
 
-I rebuilt the image using:
+The solution was to explicitly build the Docker image for AMD64:
 
 ```bash
 docker build --platform linux/amd64 -t ecs-demo-app:v2 .
 ```
 
-Then pushed the new image to ECR.
+This was an important practical lesson about **container image architecture compatibility**.
 
-The new Fargate task started successfully.
+---
 
-### Key Lesson
+# 🔄 Complete Deployment Workflow
 
-Always make sure the Docker image architecture matches the architecture configured for the target environment.
+```text
+HTML / CSS / JavaScript
+          │
+          ▼
+       Docker
+          │
+          ▼
+    Docker Image
+          │
+          ▼
+      Amazon ECR
+          │
+          ▼
+    ECS Task Definition
+          │
+          ▼
+     ECS Service
+          │
+          ▼
+       Fargate
+          │
+          ▼
+   Running Container
+          │
+          ▼
+    Web Application
+```
 
 ---
 
 # 🧹 Cleanup
 
-After completing the hands-on lab, I stopped and deleted the ECS resources to avoid unnecessary AWS charges.
+After completing the hands-on lab and capturing the required screenshots, the ECS resources were removed to avoid unnecessary AWS charges.
 
-Resources used included:
+Resources to review/delete after a lab include:
 
-```text
-ECS Cluster
-ECS Service
-Fargate Task
-Task Definition
-ECR Repository/Image
-Security Group
-```
+* ECS service
+* ECS cluster
+* Task definition revisions
+* ECR repository/images
+* Security groups
+* Other networking resources created specifically for the lab
 
----
-
-# 🎯 Key Takeaways
-
-Through this project, I learned the complete container deployment workflow on AWS:
-
-```text
-Build
-  ↓
-Containerize
-  ↓
-Push to ECR
-  ↓
-Create Task Definition
-  ↓
-Create ECS Service
-  ↓
-Run on Fargate
-  ↓
-Configure Networking
-  ↓
-Access Application
-```
-
-This project gave me practical experience with **Docker, Amazon ECR, Amazon ECS, AWS Fargate, VPC networking, task definitions, services, and container deployment**.
+Always verify that unused AWS resources are removed.
 
 ---
 
-## 🚀 Next Learning
+# 🎯 Key Learnings
 
-Next, I will continue deeper into container orchestration and AWS infrastructure, including:
+Through this project, I learned how to:
 
-* ECS service scaling
-* Load balancing with ALB
-* ECS service discovery
-* CloudWatch monitoring
-* CI/CD deployment
-* ECS task health checks
-* Infrastructure as Code
-* Production-style ECS architecture
+* Understand Amazon ECS
+* Understand ECS clusters, tasks, and services
+* Understand AWS Fargate
+* Dockerize a web application
+* Build Docker images
+* Push Docker images to Amazon ECR
+* Create ECS task definitions
+* Deploy containers using Fargate
+* Configure container port mappings
+* Configure security groups
+* Understand Fargate networking
+* Troubleshoot Docker architecture compatibility
+* Deploy a containerized application on AWS
+
+---
+
+# 🚀 Next Steps
+
+Possible improvements to this project include:
+
+* Deploying ECS behind an Application Load Balancer
+* Using a custom domain
+* Adding HTTPS with AWS Certificate Manager
+* Creating an ECS private-subnet architecture
+* Adding CloudWatch logging and monitoring
+* Configuring ECS auto scaling
+* Automating deployment using GitHub Actions
+* Building a complete CI/CD pipeline
+
+---
+
+## 📚 Project Purpose
+
+This project is part of my **Cloud & DevOps learning journey** and focuses on understanding how containerized applications move from local development to production-oriented AWS infrastructure.

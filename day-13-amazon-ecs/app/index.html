@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AWS ECS Demo | Day 12</title>
+    <meta name="description" content="A small web app packaged with Docker, stored in Amazon ECR and running on Amazon ECS with AWS Fargate.">
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚀%3C/text%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="topbar">
+        <div class="brand">ecs-demo</div>
+        <div class="topbar-right">
+            <span class="day">Day 21 of Cloud &amp; DevOps practice</span>
+            <button id="themeToggle" class="icon-btn" type="button" aria-label="Switch between light and dark theme">
+                <span aria-hidden="true">◐</span>
+            </button>
+        </div>
+    </header>
+
+    <main id="main" class="container">
+
+        <section class="hero">
+            <h1>Hello from AWS ECS! 🚀<br>This page runs in a container on Fargate.</h1>
+
+            <p class="lede">
+                The app is packaged with Docker, stored in Amazon ECR and run by Amazon ECS on AWS Fargate.
+                Replay the deployment below, or check that the app is answering right now.
+            </p>
+
+            <div class="actions">
+                <button id="replayBtn" class="btn primary" type="button">Replay the deploy</button>
+                <button id="statusButton" class="btn" type="button">Check application status</button>
+            </div>
+        </section>
+
+        <section class="pipeline" aria-labelledby="pipelineTitle">
+            <h2 id="pipelineTitle" class="section-title">How this page got here</h2>
+
+            <div class="stages">
+                <button class="stage" type="button" data-stage="docker" aria-pressed="false">
+                    <span class="stage-icon" aria-hidden="true">🐳</span>
+                    <span class="stage-name">Docker</span>
+                    <span class="stage-note">Builds the image</span>
+                    <span class="stage-state" aria-hidden="true"></span>
+                </button>
+
+                <span class="link" aria-hidden="true"></span>
+
+                <button class="stage" type="button" data-stage="ecr" aria-pressed="false">
+                    <span class="stage-icon" aria-hidden="true">📦</span>
+                    <span class="stage-name">Amazon ECR</span>
+                    <span class="stage-note">Stores the image</span>
+                    <span class="stage-state" aria-hidden="true"></span>
+                </button>
+
+                <span class="link" aria-hidden="true"></span>
+
+                <button class="stage" type="button" data-stage="ecs" aria-pressed="false">
+                    <span class="stage-icon" aria-hidden="true">☁️</span>
+                    <span class="stage-name">Amazon ECS</span>
+                    <span class="stage-note">Runs it on Fargate</span>
+                    <span class="stage-state" aria-hidden="true"></span>
+                </button>
+
+                <span class="link" aria-hidden="true"></span>
+
+                <button class="stage" type="button" data-stage="you" aria-pressed="false">
+                    <span class="stage-icon" aria-hidden="true">🌐</span>
+                    <span class="stage-name">Your browser</span>
+                    <span class="stage-note">Loads this page</span>
+                    <span class="stage-state" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div class="detail" aria-live="polite">
+                <h3 id="detailTitle"></h3>
+                <p id="detailText"></p>
+            </div>
+        </section>
+
+        <section class="panels">
+
+            <div class="terminal" role="region" aria-label="Deploy log">
+                <div class="terminal-bar">
+                    <span>deploy.log</span>
+                    <span class="terminal-note">Simulated replay of the real steps</span>
+                </div>
+                <div id="log" class="log" tabindex="0">
+                    <p class="empty">Press “Replay the deploy” to watch the pipeline run.</p>
+                </div>
+            </div>
+
+            <div class="status-panel">
+                <h2 class="section-title">Live status</h2>
+
+                <p class="status-line">
+                    <span id="statusDot" class="dot" aria-hidden="true"></span>
+                    <span id="status" role="status">Not checked yet</span>
+                </p>
+
+                <dl class="facts">
+                    <div><dt>Response time</dt><dd id="latency">-</dd></div>
+                    <div><dt>Served from</dt><dd id="host">-</dd></div>
+                    <div><dt>Time on this page</dt><dd id="session">00:00</dd></div>
+                    <div><dt>Last checked</dt><dd id="checked">-</dd></div>
+                </dl>
+
+                <div class="spark" id="spark" role="img" aria-label="Recent response times"></div>
+
+                <label class="auto">
+                    <input type="checkbox" id="autoCheck" checked>
+                    Check automatically every 10 seconds
+                </label>
+            </div>
+
+        </section>
+
+        <section class="commands" aria-labelledby="cmdTitle">
+            <h2 id="cmdTitle" class="section-title">Run the same steps yourself</h2>
+            <p class="commands-intro">Replace the values in angle brackets with your own AWS details.</p>
+
+            <ol class="cmd-list">
+                <li>
+                    <span class="cmd-label">Build the image</span>
+                    <div class="cmd"><code>docker build -t ecs-demo .</code><button class="copy" type="button">Copy</button></div>
+                </li>
+                <li>
+                    <span class="cmd-label">Test it locally</span>
+                    <div class="cmd"><code>docker run --rm -p 8080:80 ecs-demo</code><button class="copy" type="button">Copy</button></div>
+                </li>
+                <li>
+                    <span class="cmd-label">Log in to ECR</span>
+                    <div class="cmd"><code>aws ecr get-login-password --region &lt;region&gt; | docker login --username AWS --password-stdin &lt;account-id&gt;.dkr.ecr.&lt;region&gt;.amazonaws.com</code><button class="copy" type="button">Copy</button></div>
+                </li>
+                <li>
+                    <span class="cmd-label">Tag and push the image</span>
+                    <div class="cmd"><code>docker tag ecs-demo:latest &lt;account-id&gt;.dkr.ecr.&lt;region&gt;.amazonaws.com/ecs-demo:latest &amp;&amp; docker push &lt;account-id&gt;.dkr.ecr.&lt;region&gt;.amazonaws.com/ecs-demo:latest</code><button class="copy" type="button">Copy</button></div>
+                </li>
+                <li>
+                    <span class="cmd-label">Roll out to ECS</span>
+                    <div class="cmd"><code>aws ecs update-service --cluster &lt;cluster&gt; --service &lt;service&gt; --force-new-deployment</code><button class="copy" type="button">Copy</button></div>
+                </li>
+            </ol>
+        </section>
+
+        <footer>
+            <span>Cloud &amp; DevOps Learning Project</span>
+            <a href="https://github.com/SkyInfra" target="_blank" rel="noopener">github.com/SkyInfra</a>
+        </footer>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
