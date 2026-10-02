@@ -1,0 +1,57 @@
+# Read-only access so the dashboard can show real cluster data.
+# It can list things, but it cannot create, change or delete anything.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eks-demo
+  namespace: eks-demo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: eks-demo-reader
+  namespace: eks-demo
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "events"]
+    verbs: ["get", "list"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eks-demo-reader
+  namespace: eks-demo
+subjects:
+  - kind: ServiceAccount
+    name: eks-demo
+    namespace: eks-demo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: eks-demo-reader
+---
+# Nodes are cluster-wide, so they need a ClusterRole.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: eks-demo-node-reader
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eks-demo-node-reader
+subjects:
+  - kind: ServiceAccount
+    name: eks-demo
+    namespace: eks-demo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eks-demo-node-reader
